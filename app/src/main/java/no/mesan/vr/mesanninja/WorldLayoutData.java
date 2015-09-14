@@ -247,4 +247,19 @@ public final class WorldLayoutData {
             0.77f, 0.055f, 0.12f, 1.0f,
             0.77f, 0.055f, 0.12f, 1.0f,
     };
+    public static final float[] TRIANGLE_NORMALS = new float[]{
+            1.0f, 0.0f, 0.0f,
+            1.0f, 0.0f, 0.0f,
+            1.0f, 0.0f, 0.0f,
+            1.0f, 0.0f, 0.0f,
+            1.0f, 0.0f, 0.0f,
+            1.0f, 0.0f, 0.0f,
+    };
+    public static final float[] TRIANGLE_COORDS = {
+            // in counterclockwise order:
+            0.0f, 0.622008459f, 0.0f,   // top
+            -0.5f, -0.311004243f, 0.0f,   // bottom left
+            0.5f, -0.311004243f, 0.0f    // bottom right
+    };
+    public static final float[] TRIANGLE_COLORS = {0.63671875f, 0.76953125f, 0.22265625f, 1f};
 }

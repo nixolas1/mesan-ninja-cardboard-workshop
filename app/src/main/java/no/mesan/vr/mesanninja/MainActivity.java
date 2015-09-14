@@ -2,11 +2,8 @@ package no.mesan.vr.mesanninja;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.google.vrtoolkit.cardboard.CardboardActivity;
 import com.google.vrtoolkit.cardboard.CardboardView;
@@ -24,25 +21,28 @@ import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 
-public class MainActivity extends CardboardActivity implements CardboardView.StereoRenderer{
+public class MainActivity extends CardboardActivity implements CardboardView.StereoRenderer {
 
     private static final String TAG = "MainActivity";
-
-    private CardboardOverlayView viewCardboardOverlay;
-
     private static final int COORDS_PER_VERTEX = 3;
     private static final float CAMERA_Z = 0.01f;
     private static final float Z_NEAR = 0.1f;
     private static final float Z_FAR = 100.0f;
-
     // We keep the light always position just above the user.
     private static final float[] LIGHT_POS_IN_WORLD_SPACE = new float[]{0.0f, 2.0f, 0.0f, 1.0f};
+    private final float[] lightPosInEyeSpace = new float[4];
+    private CardboardOverlayView viewCardboardOverlay;
 
     private int floorProgram;
+    private int triangleProgram;
 
     private FloatBuffer floorVertices;
     private FloatBuffer floorColors;
     private FloatBuffer floorNormals;
+
+    private FloatBuffer triangleVertices;
+    private FloatBuffer triangleColors;
+    private FloatBuffer triangleNormals;
 
     private int floorPositionParam;
     private int floorNormalParam;
@@ -52,6 +52,15 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private int floorModelViewProjectionParam;
     private int floorLightPosParam;
 
+    private int trianglePositionParam;
+    private int triangleNormalParam;
+    private int triangleColorParam;
+    private int triangleModelParam;
+    private int triangleModelViewParam;
+    private int triangleModelViewProjectionParam;
+    private int triangleLightPosParam;
+
+    private float[] modelTriangle;
     private float[] modelView;
     private float[] modelFloor;
     private float[] modelViewProjection;
@@ -60,7 +69,23 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private float[] view;
 
     private float floorDepth = 30f;
-    private final float[] lightPosInEyeSpace = new float[4];
+    private float objectDistance = 30f;
+
+    private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
+    private final int vertexCount = WorldLayoutData.TRIANGLE_COORDS.length / COORDS_PER_VERTEX;
+
+    /**
+     * Checks if we've had an error inside of OpenGL ES, and if so what that error is.
+     *
+     * @param label Label to report in case of error.
+     */
+    private static void checkGLError(String label) {
+        int error;
+        while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
+            Log.e(TAG, label + ": glError " + error);
+            throw new RuntimeException(label + ": glError " + error);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +97,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     }
 
     private void initValues() {
-
+        modelTriangle = new float[16];
         modelView = new float[16];
         modelViewProjection = new float[16];
         modelFloor = new float[16];
@@ -94,7 +119,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     @Override
     public void onNewFrame(HeadTransform headTransform) {
 
-        // Set the background clear color to gray.
+        // Set the background clear color to white.
         GLES20.glClearColor(1f, 1f, 1f, 1f);
 
         // Build the camera matrix and apply it to the ModelView.
@@ -120,10 +145,13 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
 
+        Matrix.multiplyMM(modelView, 0, view, 0, modelTriangle, 0);
+        Matrix.multiplyMM(modelViewProjection, 0, perspective, 0, modelView, 0);
+        drawTriangle();
+
         // Set modelView for the floor, so we draw floor in the correct location
         Matrix.multiplyMM(modelView, 0, view, 0, modelFloor, 0);
-        Matrix.multiplyMM(modelViewProjection, 0, perspective, 0,
-                modelView, 0);
+        Matrix.multiplyMM(modelViewProjection, 0, perspective, 0, modelView, 0);
         drawFloor();
     }
 
@@ -141,11 +169,9 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     public void onSurfaceCreated(EGLConfig eglConfig) {
         Log.i(TAG, "onSurfaceCreated");
 
-        // Set the background clear color to gray.
-        GLES20.glClearColor(1f, 1f, 1f, 1f);
-
         int vertexShader = loadGLShader(GLES20.GL_VERTEX_SHADER, R.raw.light_vertex);
         int gridShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, R.raw.grid_fragment);
+        int triangleShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, R.raw.triangle_fragment);
 
         // make a floor
         ByteBuffer bbFloorVertices = ByteBuffer.allocateDirect(WorldLayoutData.FLOOR_COORDS.length * 4);
@@ -189,6 +215,50 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         checkGLError("Floor program params");
 
+        // Make triangle
+        ByteBuffer bb = ByteBuffer.allocateDirect(WorldLayoutData.TRIANGLE_COORDS.length * 4);
+        bb.order(ByteOrder.nativeOrder());
+        triangleVertices = bb.asFloatBuffer();
+        triangleVertices.put(WorldLayoutData.TRIANGLE_COORDS);
+        triangleVertices.position(0);
+
+        ByteBuffer bbColors = ByteBuffer.allocateDirect(WorldLayoutData.TRIANGLE_COLORS.length * 4);
+        bbColors.order(ByteOrder.nativeOrder());
+        triangleColors = bbColors.asFloatBuffer();
+        triangleColors.put(WorldLayoutData.TRIANGLE_COLORS);
+        triangleColors.position(0);
+
+        ByteBuffer bbNormals = ByteBuffer.allocateDirect(WorldLayoutData.TRIANGLE_NORMALS.length * 4);
+        bbColors.order(ByteOrder.nativeOrder());
+        triangleNormals = bbColors.asFloatBuffer();
+        triangleNormals.put(WorldLayoutData.TRIANGLE_COLORS);
+        triangleNormals.position(0);
+
+
+        triangleProgram = GLES20.glCreateProgram();             // create empty OpenGL Program
+        GLES20.glAttachShader(triangleProgram, vertexShader);   // add the vertex shader to program
+        GLES20.glAttachShader(triangleProgram, triangleShader); // add the fragment shader to program
+        GLES20.glLinkProgram(triangleProgram);                  // create OpenGL program executables
+        GLES20.glUseProgram(triangleProgram);
+
+        triangleModelParam = GLES20.glGetUniformLocation(triangleProgram, "u_Model");
+        triangleModelViewParam = GLES20.glGetUniformLocation(triangleProgram, "u_MVMatrix");
+        triangleModelViewProjectionParam = GLES20.glGetUniformLocation(triangleProgram, "u_MVP");
+        triangleLightPosParam = GLES20.glGetUniformLocation(triangleProgram, "u_LightPos");
+
+        trianglePositionParam = GLES20.glGetAttribLocation(triangleProgram, "a_Position");
+        triangleNormalParam = GLES20.glGetAttribLocation(triangleProgram, "a_Normal");
+        triangleColorParam = GLES20.glGetAttribLocation(triangleProgram, "a_Color");
+
+        GLES20.glEnableVertexAttribArray(trianglePositionParam);
+        GLES20.glEnableVertexAttribArray(triangleNormalParam);
+        GLES20.glEnableVertexAttribArray(triangleColorParam);
+
+        checkGLError("Triangle program params");
+
+        Matrix.setIdentityM(modelTriangle, 0);
+        Matrix.translateM(modelTriangle, 0, 0, 0, -objectDistance);
+
         Matrix.setIdentityM(modelFloor, 0);
         Matrix.translateM(modelFloor, 0, 0, -floorDepth, 0); // Floor appears below user.
 
@@ -200,8 +270,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     public void onRendererShutdown() {
         Log.i(TAG, "onRendererShutdown");
     }
-
-
 
     /**
      * Draw the floor.
@@ -230,18 +298,30 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         checkGLError("drawing floor");
     }
 
+    public void drawTriangle() {
+        GLES20.glUseProgram(triangleProgram);
 
-    /**
-     * Checks if we've had an error inside of OpenGL ES, and if so what that error is.
-     *
-     * @param label Label to report in case of error.
-     */
-    private static void checkGLError(String label) {
-        int error;
-        while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
-            Log.e(TAG, label + ": glError " + error);
-            throw new RuntimeException(label + ": glError " + error);
-        }
+        GLES20.glUniform3fv(triangleLightPosParam, 1, lightPosInEyeSpace, 0);
+
+        // Set the Model in the shader, used to calculate lighting
+        GLES20.glUniformMatrix4fv(triangleModelParam, 1, false, modelTriangle, 0);
+
+        // Set the ModelView in the shader, used to calculate lighting
+        GLES20.glUniformMatrix4fv(triangleModelViewParam, 1, false, modelView, 0);
+
+        // Set the position of the cube
+        GLES20.glVertexAttribPointer(trianglePositionParam, COORDS_PER_VERTEX, GLES20.GL_FLOAT,
+                false, vertexStride, triangleVertices);
+
+        // Set the ModelViewProjection matrix in the shader.
+        GLES20.glUniformMatrix4fv(triangleModelViewProjectionParam, 1, false, modelViewProjection, 0);
+
+        // Set the normal positions of the cube, again for shading
+        GLES20.glVertexAttribPointer(triangleNormalParam, 3, GLES20.GL_FLOAT, false, 0, triangleNormals);
+        GLES20.glVertexAttribPointer(triangleColorParam, 4, GLES20.GL_FLOAT, false, 0,triangleColors);
+
+        // Draw the triangle
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
     }
 
     /**
