@@ -13,6 +13,8 @@ import com.google.vrtoolkit.cardboard.Eye;
 import com.google.vrtoolkit.cardboard.HeadTransform;
 import com.google.vrtoolkit.cardboard.Viewport;
 
+import java.util.Random;
+
 import javax.microedition.khronos.egl.EGLConfig;
 
 public class MainActivity extends CardboardActivity implements CardboardView.StereoRenderer {
@@ -23,8 +25,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private static final float Z_NEAR = 0.1f;
     private static final float Z_FAR = 100.0f;
 
-    private static final float YAW_LIMIT = 0.10f;
-    private static final float PITCH_LIMIT = 0.10f;
+    private static final float DISTANCE_LIMIT = 0.1f;
 
     // We keep the light always position just above the user.
     private static final float[] LIGHT_POS_IN_WORLD_SPACE = new float[]{0.0f, 2.0f, 0.0f, 1.0f};
@@ -48,17 +49,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private Square square;
     private Triangle triangle;
     private Floor floor;
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            boolean lookingAtObject = isLookingAtObject();
-            if (lookingAtObject) {
-                viewCardboardOverlay.show3DToast("Du traff den!");
-            }
-        }
-        return super.onTouchEvent(event);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,7 +145,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         long time = SystemClock.uptimeMillis() % 400000L;
         float angle = 0.001f * ((int) time);
         float translate = (float) (Math.sin(angle)*0.5f);
-        Matrix.translateM(modelSquare, 0, translate, 0, 0);
+//        Matrix.translateM(modelSquare, 0, translate, 0, 0);
 
         // Build the camera matrix and apply it to the ModelView.
         Matrix.setLookAtM(camera, 0, 0.0f, 0.0f, CAMERA_Z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
@@ -183,6 +173,35 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         Log.i(TAG, "onRendererShutdown");
     }
 
+
+    @Override
+    public void onCardboardTrigger() {
+        boolean lookingAtObject = isLookingAtObject();
+        if (lookingAtObject) {
+            viewCardboardOverlay.show3DToast("Du traff den!");
+            moveTarget();
+        }
+    }
+
+    private void moveTarget() {
+
+        Random random = new Random();
+
+        float x = (float) (Math.random() * (random.nextInt(40)-20));
+        x = (x > 0) ? x + crossHairDistance : x - crossHairDistance;
+
+        float y = (float) (Math.random() * (random.nextInt(40)-20));
+        y = (y > 0) ? y + crossHairDistance : y - crossHairDistance;
+
+        float z = (float) (Math.random() * (random.nextInt(40)-20));
+        z = (z > 0) ? z + crossHairDistance : z - crossHairDistance;
+
+        Matrix.setIdentityM(modelSquare, 0);
+        Matrix.translateM(modelSquare, 0, x, y, z);
+
+
+    }
+
     /**
      * Check if user is looking at object by calculating where the object is in eye-space.
      *
@@ -190,25 +209,69 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
      */
     private boolean isLookingAtObject() {
         float[] initVec = {0, 0, 0, 1.0f};
-        float[] objPositionVecTriangle = new float[4];
-        float[] objPositionVecSquare = new float[4];
+        float[] objPositionVecTarget = new float[4];
+        float[] objPositionVecCrosshair = new float[4];
 
-        // Convert object space to camera space. Use the headView from onNewFrame.
-        Matrix.multiplyMM(modelView, 0, headView, 0, modelTriangle, 0);
-        Matrix.multiplyMV(objPositionVecTriangle, 0, modelView, 0, initVec, 0);
+        /*
+        * To calculate the resulting vector from point 0,0,0,1
+        * modelTriangle x initVec = objPositionVecCrosshair
+        *
+        * |1,0,0,0|   |0|   |x|
+        * |0,1,0,0| X |0| = |y|
+        * |0,0,1,0|   |0|   |z|
+        * |0,0,0,1|   |1|   |1|
+        */
+        Matrix.multiplyMV(objPositionVecCrosshair, 0, modelTriangle, 0, initVec, 0);
 
-        Matrix.multiplyMM(modelView, 0, headView, 0, modelSquare, 0);
-        Matrix.multiplyMV(objPositionVecSquare, 0, modelView, 0, initVec, 0);
 
-        Log.d("TAG", "TRIANGLE: " + objPositionVecTriangle[0] + " --- " + objPositionVecTriangle[1] + " --- " + objPositionVecTriangle[2]);
-        Log.d("TAG", "SQUARE: " + objPositionVecSquare[0] + " --- " + objPositionVecSquare[1] + " --- " + objPositionVecSquare[2]);
+        /*
+        * To calculate the resulting vector from point 0,0,0,1
+        * modelSquare x initVec = objPositionVecTarget
+        *
+        * |1,0,0,0|   |0|   |x|
+        * |0,1,0,0| X |0| = |y|
+        * |0,0,1,0|   |0|   |z|
+        * |0,0,0,1|   |1|   |1|
+        */
+        Matrix.multiplyMV(objPositionVecTarget, 0, modelSquare, 0, initVec, 0);
 
-        // https://developer.valvesoftware.com/w/images/7/7e/Roll_pitch_yaw.gif
-//        float roll = (float) Math.atan2(objPositionVecTriangle[0], -objPositionVec[2]);
-//        float pitch = (float) Math.atan2(objPositionVecTriangle[0], -objPositionVec[2]);
-//        float yaw = (float) Math.atan2(objPositionVecTriangle[1], -objPositionVec[2]);
+        // Distance between points
 
-//        return Math.abs(pitch) < PITCH_LIMIT && Math.abs(yaw) < YAW_LIMIT;
-        return false;
+        float x = objPositionVecCrosshair[0];
+        float y = objPositionVecCrosshair[1];
+        float z = objPositionVecCrosshair[2];
+
+        float x2 = objPositionVecTarget[0];
+        float y2 = objPositionVecTarget[1];
+        float z2 = objPositionVecTarget[2];
+
+        Log.d("TAG", "(" + x + "," + y + "," + z + "), (" + x2 + "," + y2 + "," + z2 + ")");
+
+
+        double angleCrosshairXZ =  getAngleForPoint(x, z);
+        double angleCrosshairYZ =  getAngleForPoint(y, z);
+
+        double angleTargetXZ =  getAngleForPoint(x2, z2);
+        double angleTargetYZ = getAngleForPoint(y2, z2);
+
+        boolean withinLimitXZ = Math.abs((Math.abs(angleCrosshairXZ) - Math.abs(angleTargetXZ))) < DISTANCE_LIMIT;
+        boolean withinLimitXY = Math.abs((Math.abs(angleCrosshairYZ) - Math.abs(angleTargetYZ))) < DISTANCE_LIMIT;
+
+        // Check that both crosshairZ and targetZ has same signum (+ or -)
+        boolean withinLimitZ = Math.signum(z) == Math.signum(z2);
+
+        Log.d("TAG", "withinLimitXZ: " + withinLimitXZ + " -- distance is: " + Math.abs((Math.abs(angleCrosshairXZ) - Math.abs(angleTargetXZ))));
+        Log.d("TAG", "withinLimitXY: " + withinLimitXY + " -- distance is: " + Math.abs((Math.abs(angleCrosshairYZ) - Math.abs(angleTargetYZ))));
+        Log.d("TAG", "withinLimitZ: " + withinLimitZ);
+
+        return withinLimitXZ && withinLimitXY && withinLimitZ;
+    }
+
+    private double getAngleForPoint(float a, float b) {
+        if (b == 0) {
+            return Math.atan(0);
+        }
+        return Math.atan(a / b);
+
     }
 }

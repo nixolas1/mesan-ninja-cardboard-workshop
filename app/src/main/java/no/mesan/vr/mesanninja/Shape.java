@@ -2,10 +2,12 @@ package no.mesan.vr.mesanninja;
 
 import android.content.Context;
 import android.opengl.GLES20;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.Locale;
 
 /**
  * Created by Thomas on 17.09.2015.
@@ -99,7 +101,7 @@ public abstract class Shape {
         GLES20.glVertexAttribPointer(colorParam, 4, GLES20.GL_FLOAT, false, 0, colors);
 
         // Draw the triangle
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, getShapeCoordinates().length / COORDS_PER_VERTEX);
     }
 
     protected abstract int getFragmentShader();
