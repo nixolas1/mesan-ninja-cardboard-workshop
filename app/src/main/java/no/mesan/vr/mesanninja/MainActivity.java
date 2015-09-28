@@ -5,7 +5,6 @@ import android.opengl.Matrix;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
-import android.view.MotionEvent;
 
 import com.google.vrtoolkit.cardboard.CardboardActivity;
 import com.google.vrtoolkit.cardboard.CardboardView;
@@ -16,6 +15,12 @@ import com.google.vrtoolkit.cardboard.Viewport;
 import java.util.Random;
 
 import javax.microedition.khronos.egl.EGLConfig;
+
+import no.mesan.vr.mesanninja.hud.CardboardOverlayView;
+import no.mesan.vr.mesanninja.shape.Floor;
+import no.mesan.vr.mesanninja.shape.Square;
+import no.mesan.vr.mesanninja.shape.Triangle;
+import no.mesan.vr.mesanninja.util.GLUtils;
 
 public class MainActivity extends CardboardActivity implements CardboardView.StereoRenderer {
 
@@ -115,6 +120,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         // Set the position of the light
         Matrix.multiplyMV(lightPosInEyeSpace, 0, view, 0, LIGHT_POS_IN_WORLD_SPACE, 0);
 
+        // Get the perspective
         float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
 
         // Draw square
@@ -140,12 +146,12 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         GLES20.glClearColor(1f, 1f, 1f, 1f);
 
         // Build the Model part of the ModelView matrix.
-//        Matrix.rotateM(modelSquare, 0, TIME_DELTA, 0.5f, 0.5f, 1.0f);
+        Matrix.rotateM(modelSquare, 0, TIME_DELTA, 0.5f, 0.5f, 1.0f);
 
         long time = SystemClock.uptimeMillis() % 400000L;
         float angle = 0.001f * ((int) time);
         float translate = (float) (Math.sin(angle)*0.5f);
-//        Matrix.translateM(modelSquare, 0, translate, 0, 0);
+        Matrix.translateM(modelSquare, 0, translate, 0, 0);
 
         // Build the camera matrix and apply it to the ModelView.
         Matrix.setLookAtM(camera, 0, 0.0f, 0.0f, CAMERA_Z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
@@ -198,8 +204,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         Matrix.setIdentityM(modelSquare, 0);
         Matrix.translateM(modelSquare, 0, x, y, z);
-
-
     }
 
     /**

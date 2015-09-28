@@ -1,13 +1,14 @@
-package no.mesan.vr.mesanninja;
+package no.mesan.vr.mesanninja.shape;
 
 import android.content.Context;
 import android.opengl.GLES20;
-import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.util.Locale;
+
+import no.mesan.vr.mesanninja.util.GLUtils;
+import no.mesan.vr.mesanninja.R;
 
 /**
  * Created by Thomas on 17.09.2015.
@@ -100,8 +101,14 @@ public abstract class Shape {
         GLES20.glVertexAttribPointer(normalParam, 3, GLES20.GL_FLOAT, false, 0, normals);
         GLES20.glVertexAttribPointer(colorParam, 4, GLES20.GL_FLOAT, false, 0, colors);
 
+        drawExtra(program);
+
         // Draw the triangle
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, getShapeCoordinates().length / COORDS_PER_VERTEX);
+    }
+
+    protected void drawExtra(int program) {
+
     }
 
     protected abstract int getFragmentShader();

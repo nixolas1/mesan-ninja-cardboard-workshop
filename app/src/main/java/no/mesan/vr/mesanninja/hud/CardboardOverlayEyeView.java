@@ -1,4 +1,4 @@
-package no.mesan.vr.mesanninja;
+package no.mesan.vr.mesanninja.hud;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -73,6 +73,7 @@ public class CardboardOverlayEyeView extends ViewGroup {
 
         // Layout ImageView
         float adjustedOffset = offset;
+
         // If the half screen width is bigger than 1000 pixels, that means it's a big screen
         // phone and we need to use a different offset value.
         if (width > 1000) {

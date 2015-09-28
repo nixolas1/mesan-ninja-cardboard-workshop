@@ -1,4 +1,4 @@
-package no.mesan.vr.mesanninja;
+package no.mesan.vr.mesanninja.hud;
 
 import android.content.Context;
 import android.graphics.Color;

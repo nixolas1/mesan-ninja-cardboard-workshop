@@ -1,4 +1,4 @@
-package no.mesan.vr.mesanninja;
+package no.mesan.vr.mesanninja.util;
 
 import android.content.Context;
 import android.opengl.GLES20;

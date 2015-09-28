@@ -1,11 +1,10 @@
-package no.mesan.vr.mesanninja;
+package no.mesan.vr.mesanninja.shape;
 
 import android.content.Context;
 import android.opengl.GLES20;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
+import no.mesan.vr.mesanninja.util.GLUtils;
+import no.mesan.vr.mesanninja.R;
 
 /**
  * Created by Thomas on 17.09.2015.
@@ -38,7 +37,7 @@ public class Triangle extends Shape {
 
     @Override
     protected int getFragmentShader() {
-        return GLUtils.loadGLShader(context, GLES20.GL_FRAGMENT_SHADER, R.raw.triangle_fragment);
+        return GLUtils.loadGLShader(context, GLES20.GL_FRAGMENT_SHADER, R.raw.shape_fragment);
     }
 
     @Override

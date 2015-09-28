@@ -1,11 +1,10 @@
-package no.mesan.vr.mesanninja;
+package no.mesan.vr.mesanninja.shape;
 
 import android.content.Context;
 import android.opengl.GLES20;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
+import no.mesan.vr.mesanninja.util.GLUtils;
+import no.mesan.vr.mesanninja.R;
 
 /**
  * Created by Thomas on 17.09.2015.
