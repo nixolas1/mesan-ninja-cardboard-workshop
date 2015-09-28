@@ -20,7 +20,6 @@ import no.mesan.vr.mesanninja.hud.CardboardOverlayView;
 import no.mesan.vr.mesanninja.shape.Cube;
 import no.mesan.vr.mesanninja.shape.Floor;
 import no.mesan.vr.mesanninja.shape.Shape;
-import no.mesan.vr.mesanninja.shape.Square;
 import no.mesan.vr.mesanninja.shape.Triangle;
 import no.mesan.vr.mesanninja.util.GLUtils;
 
@@ -53,7 +52,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private float crossHairDistance = 10f;
     private float targetDistance = 25f;
 
-    private Shape square;
     private Shape triangle;
     private Floor floor;
 
@@ -67,7 +65,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     }
 
     private void initValues() {
-        modelSquare = new float[16];
         modelTriangle = new float[16];
         modelFloor = new float[16];
         modelView = new float[16];
@@ -92,9 +89,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         Log.i(TAG, "onSurfaceCreated");
 
         // Create square
-        square = new Cube(this);
-        Matrix.setIdentityM(modelSquare, 0);
-        Matrix.translateM(modelSquare, 0, 0, 0, -targetDistance);
+        // Oppgave 4b
 
         // Create triangle
         triangle = new Triangle(this);
@@ -119,9 +114,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         float[] perspective = setProjections(eye);
 
         // Draw square
-        Matrix.multiplyMM(modelView, 0, view, 0, modelSquare, 0);
-        Matrix.multiplyMM(modelViewProjection, 0, perspective, 0, modelView, 0);
-        square.draw(modelSquare, modelViewProjection);
+        // Oppgave 4b
 
         // Draw triangle
         Matrix.multiplyMM(modelView, 0, view, 0, modelTriangle, 0);
@@ -152,12 +145,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         GLES20.glClearColor(1f, 1f, 1f, 1f);
 
         // Build the Model part of the ModelView matrix.
-        Matrix.rotateM(modelSquare, 0, TIME_DELTA, 0.5f, 0.5f, 1.0f);
-
-        long time = SystemClock.uptimeMillis() % 400000L;
-        float angle = 0.001f * ((int) time);
-        float translate = (float) (Math.sin(angle)*0.5f);
-        Matrix.translateM(modelSquare, 0, translate, 0, 0);
+        // Oppgave 4c
 
         // Build the camera matrix and apply it to the ModelView.
         Matrix.setLookAtM(camera, 0, 0.0f, 0.0f, CAMERA_Z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
