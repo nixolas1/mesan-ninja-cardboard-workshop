@@ -192,8 +192,9 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     public void onCardboardTrigger() {
         boolean lookingAtObject = isLookingAtObject();
         if (lookingAtObject) {
-            viewCardboardOverlay.show3DToast("Du traff den!");
-            moveTarget();
+            // Oppgave 5a 1
+
+            // Oppgave 5a 2
         }
     }
 
@@ -248,28 +249,9 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         // Distance between points
 
-        float x = objPositionVecCrosshair[0];
-        float y = objPositionVecCrosshair[1];
-        float z = objPositionVecCrosshair[2];
+        // Oppgave 5a
 
-        float x2 = objPositionVecTarget[0];
-        float y2 = objPositionVecTarget[1];
-        float z2 = objPositionVecTarget[2];
-
-
-        double angleCrosshairXZ =  getAngleForPoint(x, z);
-        double angleCrosshairYZ =  getAngleForPoint(y, z);
-
-        double angleTargetXZ =  getAngleForPoint(x2, z2);
-        double angleTargetYZ = getAngleForPoint(y2, z2);
-
-        boolean withinLimitXZ = Math.abs((Math.abs(angleCrosshairXZ) - Math.abs(angleTargetXZ))) < DISTANCE_LIMIT;
-        boolean withinLimitXY = Math.abs((Math.abs(angleCrosshairYZ) - Math.abs(angleTargetYZ))) < DISTANCE_LIMIT;
-
-        // Check that both crosshairZ and targetZ has same signum (+ or -)
-        boolean withinLimitZ = Math.signum(z) == Math.signum(z2);
-
-        return withinLimitXZ && withinLimitXY && withinLimitZ;
+        return false;
     }
 
     private double getAngleForPoint(float a, float b) {
