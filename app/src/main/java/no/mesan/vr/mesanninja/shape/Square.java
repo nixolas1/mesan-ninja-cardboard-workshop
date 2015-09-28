@@ -11,15 +11,6 @@ import no.mesan.vr.mesanninja.R;
  */
 public class Square extends Shape {
 
-    private static final float[] SQUARE_NORMALS = new float[]{
-            0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 1.0f
-    };
-
     private static final float[] SQUARE_COORDINATES = {
             -1.0f, 1.0f, 1.0f,
             -1.0f, -1.0f, 1.0f,
@@ -55,10 +46,5 @@ public class Square extends Shape {
     @Override
     protected float[] getShapeColors() {
         return SQUARE_COLORS;
-    }
-
-    @Override
-    protected float[] getShapeNormals() {
-        return SQUARE_NORMALS;
     }
 }

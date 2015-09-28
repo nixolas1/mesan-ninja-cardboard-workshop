@@ -20,15 +20,6 @@ public class Floor extends Shape {
             200f, 0, 200f,
     };
 
-    private static final float[] FLOOR_NORMALS = new float[]{
-            0.0f, 1.0f, 0.0f,
-            0.0f, 1.0f, 0.0f,
-            0.0f, 1.0f, 0.0f,
-            0.0f, 1.0f, 0.0f,
-            0.0f, 1.0f, 0.0f,
-            0.0f, 1.0f, 0.0f,
-    };
-
     private static final float[] FLOOR_COLORS = new float[]{
             0.77f, 0.055f, 0.12f, 1.0f,
             0.77f, 0.055f, 0.12f, 1.0f,
@@ -57,8 +48,4 @@ public class Floor extends Shape {
         return FLOOR_COLORS;
     }
 
-    @Override
-    protected float[] getShapeNormals() {
-        return FLOOR_NORMALS;
-    }
 }

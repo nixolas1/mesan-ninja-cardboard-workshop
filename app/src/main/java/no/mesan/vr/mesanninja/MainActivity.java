@@ -17,7 +17,9 @@ import java.util.Random;
 import javax.microedition.khronos.egl.EGLConfig;
 
 import no.mesan.vr.mesanninja.hud.CardboardOverlayView;
+import no.mesan.vr.mesanninja.shape.Cube;
 import no.mesan.vr.mesanninja.shape.Floor;
+import no.mesan.vr.mesanninja.shape.Shape;
 import no.mesan.vr.mesanninja.shape.Square;
 import no.mesan.vr.mesanninja.shape.Triangle;
 import no.mesan.vr.mesanninja.util.GLUtils;
@@ -33,9 +35,9 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private static final float DISTANCE_LIMIT = 0.1f;
 
     // We keep the light always position just above the user.
-    private static final float[] LIGHT_POS_IN_WORLD_SPACE = new float[]{0.0f, 2.0f, 0.0f, 1.0f};
+    private static final float[] LIGHT_POSITION_IN_WORLD_SPACE = new float[]{0.0f, 2.0f, 0.0f, 1.0f};
 
-    private final float[] lightPosInEyeSpace = new float[4];
+    private final float[] lightPositionInEyeSpace = new float[4];
     private CardboardOverlayView viewCardboardOverlay;
 
     private float[] modelSquare;
@@ -51,8 +53,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private float crossHairDistance = 10f;
     private float targetDistance = 25f;
 
-    private Square square;
-    private Triangle triangle;
+    private Shape square;
+    private Shape triangle;
     private Floor floor;
 
     @Override
@@ -90,7 +92,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         Log.i(TAG, "onSurfaceCreated");
 
         // Create square
-        square = new Square(this);
+        square = new Cube(this);
         Matrix.setIdentityM(modelSquare, 0);
         Matrix.translateM(modelSquare, 0, 0, 0, -targetDistance);
 
@@ -114,29 +116,33 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         GLUtils.checkGLError("colorParam");
 
-        // Apply the eye transformation to the camera.
-        Matrix.multiplyMM(view, 0, eye.getEyeView(), 0, camera, 0);
-
-        // Set the position of the light
-        Matrix.multiplyMV(lightPosInEyeSpace, 0, view, 0, LIGHT_POS_IN_WORLD_SPACE, 0);
-
-        // Get the perspective
-        float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
+        float[] perspective = setProjections(eye);
 
         // Draw square
         Matrix.multiplyMM(modelView, 0, view, 0, modelSquare, 0);
         Matrix.multiplyMM(modelViewProjection, 0, perspective, 0, modelView, 0);
-        square.draw(modelSquare, modelView, modelViewProjection, lightPosInEyeSpace);
+        square.draw(modelSquare, modelViewProjection);
 
         // Draw triangle
         Matrix.multiplyMM(modelView, 0, view, 0, modelTriangle, 0);
         Matrix.multiplyMM(modelViewProjection, 0, perspective, 0, modelView, 0);
-        triangle.draw(modelTriangle, modelView, modelViewProjection, lightPosInEyeSpace);
+        triangle.draw(modelTriangle, modelViewProjection);
 
         // Set modelView for the floor, so we draw floor in the correct location
         Matrix.multiplyMM(modelView, 0, view, 0, modelFloor, 0);
         Matrix.multiplyMM(modelViewProjection, 0, perspective, 0, modelView, 0);
-        floor.draw(modelFloor, modelView, modelViewProjection, lightPosInEyeSpace);
+        floor.draw(modelFloor, modelViewProjection);
+    }
+
+    private float[] setProjections(Eye eye) {
+        // Apply the eye transformation to the camera.
+        Matrix.multiplyMM(view, 0, eye.getEyeView(), 0, camera, 0);
+
+        // Set the position of the light
+        Matrix.multiplyMV(lightPositionInEyeSpace, 0, view, 0, LIGHT_POSITION_IN_WORLD_SPACE, 0);
+
+        // Get the perspective
+        return eye.getPerspective(Z_NEAR, Z_FAR);
     }
 
     @Override
@@ -158,6 +164,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         headTransform.getHeadView(headView, 0);
 
+        // A matrix obtained from a given matrix by interchanging
+        // each row and the corresponding column
         Matrix.transposeM(modelTriangle, 0, headView, 0);
         Matrix.translateM(modelTriangle, 0, 0, 0, -crossHairDistance);
 
@@ -227,7 +235,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         */
         Matrix.multiplyMV(objPositionVecCrosshair, 0, modelTriangle, 0, initVec, 0);
 
-
         /*
         * To calculate the resulting vector from point 0,0,0,1
         * modelSquare x initVec = objPositionVecTarget
@@ -249,8 +256,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         float y2 = objPositionVecTarget[1];
         float z2 = objPositionVecTarget[2];
 
-        Log.d("TAG", "(" + x + "," + y + "," + z + "), (" + x2 + "," + y2 + "," + z2 + ")");
-
 
         double angleCrosshairXZ =  getAngleForPoint(x, z);
         double angleCrosshairYZ =  getAngleForPoint(y, z);
@@ -263,10 +268,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         // Check that both crosshairZ and targetZ has same signum (+ or -)
         boolean withinLimitZ = Math.signum(z) == Math.signum(z2);
-
-        Log.d("TAG", "withinLimitXZ: " + withinLimitXZ + " -- distance is: " + Math.abs((Math.abs(angleCrosshairXZ) - Math.abs(angleTargetXZ))));
-        Log.d("TAG", "withinLimitXY: " + withinLimitXY + " -- distance is: " + Math.abs((Math.abs(angleCrosshairYZ) - Math.abs(angleTargetYZ))));
-        Log.d("TAG", "withinLimitZ: " + withinLimitZ);
 
         return withinLimitXZ && withinLimitXY && withinLimitZ;
     }

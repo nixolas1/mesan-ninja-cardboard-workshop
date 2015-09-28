@@ -160,56 +160,6 @@ public class Cube extends Shape {
             1.0f, 0.6523f, 0.0f, 1.0f,
     };
 
-    public static final float[] CUBE_NORMALS = new float[]{
-            // Front face
-            0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 1.0f,
-
-            // Right face
-            1.0f, 0.0f, 0.0f,
-            1.0f, 0.0f, 0.0f,
-            1.0f, 0.0f, 0.0f,
-            1.0f, 0.0f, 0.0f,
-            1.0f, 0.0f, 0.0f,
-            1.0f, 0.0f, 0.0f,
-
-            // Back face
-            0.0f, 0.0f, -1.0f,
-            0.0f, 0.0f, -1.0f,
-            0.0f, 0.0f, -1.0f,
-            0.0f, 0.0f, -1.0f,
-            0.0f, 0.0f, -1.0f,
-            0.0f, 0.0f, -1.0f,
-
-            // Left face
-            -1.0f, 0.0f, 0.0f,
-            -1.0f, 0.0f, 0.0f,
-            -1.0f, 0.0f, 0.0f,
-            -1.0f, 0.0f, 0.0f,
-            -1.0f, 0.0f, 0.0f,
-            -1.0f, 0.0f, 0.0f,
-
-            // Top face
-            0.0f, 1.0f, 0.0f,
-            0.0f, 1.0f, 0.0f,
-            0.0f, 1.0f, 0.0f,
-            0.0f, 1.0f, 0.0f,
-            0.0f, 1.0f, 0.0f,
-            0.0f, 1.0f, 0.0f,
-
-            // Bottom face
-            0.0f, -1.0f, 0.0f,
-            0.0f, -1.0f, 0.0f,
-            0.0f, -1.0f, 0.0f,
-            0.0f, -1.0f, 0.0f,
-            0.0f, -1.0f, 0.0f,
-            0.0f, -1.0f, 0.0f
-    };
-
     public Cube(Context context) {
         super(context);
     }
@@ -227,10 +177,5 @@ public class Cube extends Shape {
     @Override
     protected float[] getShapeColors() {
         return CUBE_COLORS;
-    }
-
-    @Override
-    protected float[] getShapeNormals() {
-        return CUBE_NORMALS;
     }
 }

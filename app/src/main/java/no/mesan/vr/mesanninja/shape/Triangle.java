@@ -6,16 +6,7 @@ import android.opengl.GLES20;
 import no.mesan.vr.mesanninja.util.GLUtils;
 import no.mesan.vr.mesanninja.R;
 
-/**
- * Created by Thomas on 17.09.2015.
- */
 public class Triangle extends Shape {
-
-    private static final float[] TRIANGLE_NORMALS = new float[]{
-            1.0f, 0.0f, 0.0f,
-            1.0f, 0.0f, 0.0f,
-            1.0f, 0.0f, 0.0f
-    };
 
     private static final float[] TRIANGLE_COORDINATES = {
             // in counterclockwise order:
@@ -49,11 +40,5 @@ public class Triangle extends Shape {
     protected float[] getShapeColors() {
         return TRIANGLE_COLORS;
     }
-
-    @Override
-    protected float[] getShapeNormals() {
-        return TRIANGLE_NORMALS;
-    }
-
 
 }
