@@ -91,10 +91,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         // Create square
         // Oppgave 4b
 
-        // Create triangle
-        triangle = new Triangle(this);
-        Matrix.setIdentityM(modelTriangle, 0);
-        Matrix.translateM(modelTriangle, 0, 0, 0, -crossHairDistance);
+        // Create triangle// Oppgave 2b
+        // Oppgave 2a
 
         // Create floor
         floor = new Floor(this);
@@ -117,9 +115,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         // Oppgave 4b
 
         // Draw triangle
-        Matrix.multiplyMM(modelView, 0, view, 0, modelTriangle, 0);
-        Matrix.multiplyMM(modelViewProjection, 0, perspective, 0, modelView, 0);
-        triangle.draw(modelTriangle, modelViewProjection);
+        // Oppgave 2a
 
         // Set modelView for the floor, so we draw floor in the correct location
         Matrix.multiplyMM(modelView, 0, view, 0, modelFloor, 0);
