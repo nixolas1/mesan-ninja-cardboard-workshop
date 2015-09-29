@@ -152,10 +152,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         headTransform.getHeadView(headView, 0);
 
-        // A matrix obtained from a given matrix by interchanging
-        // each row and the corresponding column
-        Matrix.transposeM(modelTriangle, 0, headView, 0);
-        Matrix.translateM(modelTriangle, 0, 0, 0, -crossHairDistance);
+        // Oppgave 3b
 
         GLUtils.checkGLError("onReadyToDraw");
     }
