@@ -39,7 +39,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private final float[] lightPositionInEyeSpace = new float[4];
     private CardboardOverlayView viewCardboardOverlay;
 
-    private float[] modelSquare;
     private float[] modelTriangle;
     private float[] modelView;
     private float[] modelFloor;
@@ -48,7 +47,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private float[] headView;
     private float[] view;
 
-    private float floorDepth = 30f;
+    private float floorDepth = 15f;
     private float crossHairDistance = 10f;
     private float targetDistance = 25f;
 
@@ -97,6 +96,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         // Create floor
         floor = new Floor(this);
         Matrix.setIdentityM(modelFloor, 0);
+
+        // Oppgave 2b
         Matrix.translateM(modelFloor, 0, 0, -floorDepth, 0); // Floor appears below user.
 
         GLUtils.checkGLError("onSurfaceCreated");
@@ -137,8 +138,9 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     @Override
       public void onNewFrame(HeadTransform headTransform) {
 
-        // Set the background clear color to white.
-        GLES20.glClearColor(1f, 1f, 1f, 1f);
+        // Set the background color
+        // Oppgave 1c
+        GLES20.glClearColor(0f, 0f, 0f, 1f);
 
         // Build the Model part of the ModelView matrix.
         // Oppgave 4c
@@ -179,23 +181,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         }
     }
 
-    private void moveTarget() {
-
-        Random random = new Random();
-
-        float x = (float) (Math.random() * (random.nextInt(40)-20));
-        x = (x > 0) ? x + crossHairDistance : x - crossHairDistance;
-
-        float y = (float) (Math.random() * (random.nextInt(40)-20));
-        y = (y > 0) ? y + crossHairDistance : y - crossHairDistance;
-
-        float z = (float) (Math.random() * (random.nextInt(40)-20));
-        z = (z > 0) ? z + crossHairDistance : z - crossHairDistance;
-
-        Matrix.setIdentityM(modelSquare, 0);
-        Matrix.translateM(modelSquare, 0, x, y, z);
-    }
-
     /**
      * Check if user is looking at object by calculating where the object is in eye-space.
      *
@@ -226,7 +211,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         * |0,0,1,0|   |0|   |z|
         * |0,0,0,1|   |1|   |1|
         */
-        Matrix.multiplyMV(objPositionVecTarget, 0, modelSquare, 0, initVec, 0);
+//        Matrix.multiplyMV(objPositionVecTarget, 0, modelSquare, 0, initVec, 0);
 
         // Distance between points
 

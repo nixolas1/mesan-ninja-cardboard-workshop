@@ -17,16 +17,17 @@ public class Floor extends Shape {
             -200f, 0, 200f,
             200f, 0, -200f,
             -200f, 0, 200f,
-            200f, 0, 200f,
+            200f, 0, 200f
     };
 
+    // Oppgave 1a
     private static final float[] FLOOR_COLORS = new float[]{
-            0.77f, 0.055f, 0.12f, 1.0f,
-            0.77f, 0.055f, 0.12f, 1.0f,
-            0.77f, 0.055f, 0.12f, 1.0f,
-            0.77f, 0.055f, 0.12f, 1.0f,
-            0.77f, 0.055f, 0.12f, 1.0f,
-            0.77f, 0.055f, 0.12f, 1.0f,
+            0f, 0f, 1f, 1.0f,
+            0f, 0f, 1f, 1.0f,
+            0f, 0f, 1f, 1.0f,
+            0f, 0f, 1f, 1.0f,
+            0f, 0f, 1f, 1.0f,
+            0f, 0f, 1f, 1.0f
     };
 
     public Floor(Context context) {
