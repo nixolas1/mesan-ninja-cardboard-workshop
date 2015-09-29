@@ -179,23 +179,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         }
     }
 
-    private void moveTarget() {
-
-        Random random = new Random();
-
-        float x = (float) (Math.random() * (random.nextInt(40)-20));
-        x = (x > 0) ? x + crossHairDistance : x - crossHairDistance;
-
-        float y = (float) (Math.random() * (random.nextInt(40)-20));
-        y = (y > 0) ? y + crossHairDistance : y - crossHairDistance;
-
-        float z = (float) (Math.random() * (random.nextInt(40)-20));
-        z = (z > 0) ? z + crossHairDistance : z - crossHairDistance;
-
-        Matrix.setIdentityM(modelSquare, 0);
-        Matrix.translateM(modelSquare, 0, x, y, z);
-    }
-
     /**
      * Check if user is looking at object by calculating where the object is in eye-space.
      *
@@ -226,7 +209,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         * |0,0,1,0|   |0|   |z|
         * |0,0,0,1|   |1|   |1|
         */
-        Matrix.multiplyMV(objPositionVecTarget, 0, modelSquare, 0, initVec, 0);
+//        Matrix.multiplyMV(objPositionVecTarget, 0, modelSquare, 0, initVec, 0);
 
         // Distance between points
 
