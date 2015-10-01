@@ -8,6 +8,8 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.LinearLayout;
 
+import no.mesan.vr.mesanninja.MainActivity;
+
 /**
  * Contains two sub-views to provide a simple stereo HUD.
  */
@@ -41,16 +43,21 @@ public class CardboardOverlayView extends LinearLayout {
         textFadeAnimation.setDuration(5000);
     }
 
-    public void show3DToast(String message) {
-        setText(message);
-        setTextAlpha(1f);
-        textFadeAnimation.setAnimationListener(new EndAnimationListener() {
+    public void show3DToast(final String message) {
+        ((MainActivity) getContext()).runOnUiThread(new Runnable() {
             @Override
-            public void onAnimationEnd(Animation animation) {
-                setTextAlpha(0f);
+            public void run() {
+                setText(message);
+                setTextAlpha(1f);
+                textFadeAnimation.setAnimationListener(new EndAnimationListener() {
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        setTextAlpha(0f);
+                    }
+                });
+                startAnimation(textFadeAnimation);
             }
         });
-        startAnimation(textFadeAnimation);
     }
 
     private void setDepthOffset(float offset) {

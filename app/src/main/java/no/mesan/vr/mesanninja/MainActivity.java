@@ -216,7 +216,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         * |0,0,1,0|   |0|   |z|
         * |0,0,0,1|   |1|   |1|
         */
-        Matrix.multiplyMV(objPositionVecTarget, 0, modelSquare, 0, initVec, 0);
+        // Matrix.multiplyMV(objPositionVecTarget, 0, modelSquare, 0, initVec, 0);
 
         // Distance between points
 
