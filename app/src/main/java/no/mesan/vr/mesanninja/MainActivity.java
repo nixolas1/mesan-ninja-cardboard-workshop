@@ -97,7 +97,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         floor = new Floor(this);
         Matrix.setIdentityM(modelFloor, 0);
 
-        // Oppgave 2b
+        // Oppgave 1b
         Matrix.translateM(modelFloor, 0, 0, -floorDepth, 0); // Floor appears below user.
 
         GLUtils.checkGLError("onSurfaceCreated");
