@@ -99,6 +99,16 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         Matrix.setIdentityM(modelFloor, 0);
         Matrix.translateM(modelFloor, 0, 0, -floorDepth, 0); // Floor appears below user.
 
+        //Create triangle
+        triangle = new Triangle(this);
+        Matrix.setIdentityM(modelTriangle, 0);
+        Matrix.translateM(modelTriangle, 0, 2, 2, -2);
+        Matrix.scaleM(modelTriangle, 0, 5, 5, 5);
+        Matrix.rotateM(modelTriangle, 0, 180, 0,1,0);
+
+
+
+
         GLUtils.checkGLError("onSurfaceCreated");
     }
 
@@ -121,6 +131,10 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         Matrix.multiplyMM(modelView, 0, view, 0, modelFloor, 0);
         Matrix.multiplyMM(modelViewProjection, 0, perspective, 0, modelView, 0);
         floor.draw(modelFloor, modelViewProjection);
+
+        Matrix.multiplyMM(modelView, 0, view, 0, modelTriangle, 0);
+        Matrix.multiplyMM(modelViewProjection, 0, perspective, 0, modelView, 0);
+        triangle.draw(modelTriangle, modelViewProjection);
     }
 
     private float[] setProjections(Eye eye) {

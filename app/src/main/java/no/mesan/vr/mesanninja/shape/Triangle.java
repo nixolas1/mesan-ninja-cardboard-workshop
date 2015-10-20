@@ -18,9 +18,9 @@ public class Triangle extends Shape {
 
     // Oppgave 2b
     private static final float[] TRIANGLE_COLORS = {
-            0f, 1f, 0f, 1f,
-            0f, 1f, 0f, 1f,
-            0f, 1f, 0f, 1f
+            0f, 0f, 1f, 1f,
+            0f, 0f, 1f, 1f,
+            0f, 0f, 1f, 1f
     };
 
     public Triangle(Context context) {
