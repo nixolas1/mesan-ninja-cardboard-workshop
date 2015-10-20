@@ -51,6 +51,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private float floorDepth = 30f;
     private float crossHairDistance = 10f;
     private float targetDistance = 25f;
+    private float rotation = 0f;
 
     private Shape triangle;
     private Floor floor;
@@ -153,6 +154,9 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         // Set the background clear color to white.
         GLES20.glClearColor(1f, 1f, 1f, 1f);
+
+        rotation += 1;
+        Matrix.rotateM(modelTriangle, 0, rotation, 0,1,0);
 
         // Build the Model part of the ModelView matrix.
         // Oppgave 4c
