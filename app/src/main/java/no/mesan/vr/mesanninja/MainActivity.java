@@ -140,7 +140,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         // Set the background color
         // Oppgave 1c
-        GLES20.glClearColor(0f, 0f, 0f, 1f);
+
+        GLES20.glClearColor(0f, 1f, 0f, 1f);
 
         // Build the Model part of the ModelView matrix.
         // Oppgave 4c
