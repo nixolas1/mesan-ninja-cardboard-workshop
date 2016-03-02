@@ -95,11 +95,14 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         triangle = new Triangle(this);
         Matrix.setIdentityM(modelTriangle, 0);
         Matrix.translateM(modelTriangle, 0, 0, 0, -crossHairDistance);
+        //Matrix.scaleM(modelTriangle, 0, 0, 1, 0);
+        //Matrix.transposeM(modelTriangle, 0, headView, 0);
 
         // Create floor
         floor = new Floor(this);
         Matrix.setIdentityM(modelFloor, 0);
         Matrix.translateM(modelFloor, 0, 0, -floorDepth, 0); // Floor appears below user.
+
 
         GLUtils.checkGLError("onSurfaceCreated");
     }
@@ -153,6 +156,9 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         headTransform.getHeadView(headView, 0);
 
         // Oppgave 3b
+        Matrix.transposeM(modelTriangle, 0, headView, 0);
+        Matrix.translateM(modelTriangle, 0, 0, 0, 0);
+
 
         GLUtils.checkGLError("onReadyToDraw");
     }
