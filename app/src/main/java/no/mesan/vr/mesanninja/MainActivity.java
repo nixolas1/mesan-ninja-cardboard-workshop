@@ -103,8 +103,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //Create triangle
         triangle = new Triangle(this);
         Matrix.setIdentityM(modelTriangle, 0);
-        Matrix.translateM(modelTriangle, 0, 2, 2, -2);
-        Matrix.scaleM(modelTriangle, 0, 5, 5, 5);
+        Matrix.translateM(modelTriangle, 0, 10, 10, -10);
+        Matrix.scaleM(modelTriangle, 0, 3, 3, 3);
         Matrix.rotateM(modelTriangle, 0, 180, 0,1,0);
 
 
